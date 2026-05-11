@@ -1,0 +1,46 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; }
+
+body {
+  background: #0e0e18;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100dvh;
+  font-family: 'Manrope', sans-serif;
+}
+
+#shell {
+  width: 390px;
+  height: 844px;
+  position: relative;
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 10px #1a1a2a,
+    0 0 0 12px #2a2a3a,
+    0 40px 100px rgba(0,0,0,0.7);
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  background: #F9F9FF;
+  border-radius: inherit;
+}
+
+@media (max-width: 430px) {
+  body { background: #F9F9FF; align-items: flex-start; }
+  #shell { width: 100%; height: 100dvh; border-radius: 0; box-shadow: none; }
+}
+
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; }
+
+@keyframes slideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+input:focus { outline: none; }
+button { -webkit-tap-highlight-color: transparent; }

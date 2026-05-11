@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Wardrobble</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; }
+
+    body {
+      background: #0e0e18;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100dvh;
+      font-family: 'Manrope', sans-serif;
+    }
+
+    /* Desktop: phone shell */
+    #shell {
+      width: 390px;
+      height: 844px;
+      position: relative;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 10px #1a1a2a,
+        0 0 0 12px #2a2a3a,
+        0 40px 100px rgba(0,0,0,0.7);
+    }
+
+    /* Mobile: fill viewport */
+    @media (max-width: 430px) {
+      body { background: #F9F9FF; align-items: flex-start; }
+      #shell { width: 100%; height: 100dvh; border-radius: 0; box-shadow: none; }
+    }
+
+    /* Hide scrollbars globally */
+    * { scrollbar-width: none; -ms-overflow-style: none; }
+    *::-webkit-scrollbar { display: none; }
+
+    /* Sheet animation */
+    @keyframes slideUp {
+      from { transform: translateY(60px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    /* Input focus */
+    input:focus { outline: none; }
+    button { -webkit-tap-highlight-color: transparent; }
+  </style>
+
+  <!-- React + Babel (pinned) -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js"
+    integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"
+    integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm"
+    crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"
+    integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y"
+    crossorigin="anonymous"></script>
+
+  <!-- Design tokens (plain JS, no JSX) -->
+  <script src="tokens.js"></script>
+</head>
+<body>
+  <div id="shell">
+    <div id="root" style="width:100%;height:100%;background:#F9F9FF;border-radius:inherit;"></div>
+  </div>
+
+  <!-- Icons + placeholders -->
+  <script type="text/babel" src="icons.jsx"></script>
+  <!-- Shared components -->
+  <script type="text/babel" src="components.jsx"></script>
+  <!-- Screens -->
+  <script type="text/babel" src="WardrobeScreen.jsx"></script>
+  <script type="text/babel" src="ShuffleScreen.jsx"></script>
+  <script type="text/babel" src="SavedScreen.jsx"></script>
+  <script type="text/babel" src="OnboardingScreen.jsx"></script>
+  <!-- App root -->
+  <script type="text/babel" src="app.jsx"></script>
+
+  <!-- Tweaks panel -->
+  <script type="text/babel">
+  (() => {
+    const TWEAK_DEFAULTS = {
+      "accentColor": "#FA8787",
+      "darkMode": false,
+      "compactCards": false
+    };
+
+    let tweaks = { ...TWEAK_DEFAULTS };
+
+    const applyTweaks = () => {
+      document.documentElement.style.setProperty('--accent', tweaks.accentColor);
+    };
+    applyTweaks();
+
+    // Panel
+    const panelId = 'wrd-tweaks-panel';
+    const createPanel = () => {
+      if (document.getElementById(panelId)) return;
+      const shell = document.getElementById('shell');
+      const panel = document.createElement('div');
+      panel.id = panelId;
+      panel.style.cssText = `
+        position:absolute; bottom:90px; right:12px; width:220px;
+        background:rgba(255,255,255,0.97); border-radius:16px;
+        box-shadow:0 8px 32px rgba(0,0,0,0.18); padding:16px;
+        font-family:'Manrope',sans-serif; z-index:999; display:none;
+        border:1px solid rgba(220,192,191,0.25);
+      `;
+      panel.innerHTML = `
+        <div style="font-weight:700;font-size:13px;color:#141B2B;margin-bottom:14px;letter-spacing:-0.2px;">Tweaks</div>
+
+        <label style="display:block;font-size:11px;font-weight:600;color:#585F6C;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.6px;">Accent Color</label>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+          ${['#FA8787','#F43F5E','#7C8BFA','#4CAF86','#F4A243','#A78BFA'].map(col => `
+            <button data-color="${col}" style="
+              width:26px;height:26px;border-radius:50%;background:${col};border:2px solid ${col === tweaks.accentColor ? '#141B2B' : 'transparent'};
+              cursor:pointer;transition:transform 0.15s;
+            "></button>
+          `).join('')}
+        </div>
+
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#585F6C;cursor:pointer;margin-bottom:10px;">
+          <input type="checkbox" id="twk-compact" ${tweaks.compactCards ? 'checked' : ''} style="accent-color:#FA8787;">
+          Compact cards
+        </label>
+
+        <div style="font-size:10px;color:#A8A29E;margin-top:8px;line-height:1.5;">Changes apply live ↑</div>
+      `;
+
+      // Color buttons
+      panel.querySelectorAll('[data-color]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          tweaks.accentColor = btn.dataset.color;
+          panel.querySelectorAll('[data-color]').forEach(b => b.style.border = '2px solid transparent');
+          btn.style.border = '2px solid #141B2B';
+          window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { accentColor: tweaks.accentColor } }, '*');
+          applyTweaks();
+        });
+      });
+
+      // Compact toggle
+      panel.querySelector('#twk-compact').addEventListener('change', e => {
+        tweaks.compactCards = e.target.checked;
+        window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { compactCards: tweaks.compactCards } }, '*');
+      });
+
+      shell.appendChild(panel);
+      return panel;
+    };
+
+    window.addEventListener('message', e => {
+      if (e.data?.type === '__activate_edit_mode') {
+        const p = createPanel() || document.getElementById(panelId);
+        if (p) p.style.display = 'block';
+      }
+      if (e.data?.type === '__deactivate_edit_mode') {
+        const p = document.getElementById(panelId);
+        if (p) p.style.display = 'none';
+      }
+    });
+
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+  })();
+  </script>
+</body>
+</html>
