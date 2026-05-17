@@ -183,9 +183,19 @@ const AddItemSheet = ({ onClose, onAdd }) => {
 
   const handleFile = file => {
     if (!file || !file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = e => setImgSrc(e.target.result);
-    reader.readAsDataURL(file);
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 400;
+      const scale = Math.min(MAX / img.width, MAX / img.height, 1);
+      const canvas = document.createElement('canvas');
+      canvas.width  = Math.round(img.width  * scale);
+      canvas.height = Math.round(img.height * scale);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      setImgSrc(canvas.toDataURL('image/jpeg', 0.7));
+    };
+    img.src = url;
   };
 
   return (
