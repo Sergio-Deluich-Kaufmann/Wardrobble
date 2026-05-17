@@ -18,13 +18,27 @@ const App = () => {
 
   useEffect(() => { ls.set('wrd_onboarded', onboarded); }, [onboarded]);
   useEffect(() => { ls.set('wrd_tab',       tab);        }, [tab]);
-  useEffect(() => { ls.set('wrd_wardrobe',  wardrobe);   }, [wardrobe]);
-  useEffect(() => { ls.set('wrd_saved',     saved);      }, [saved]);
 
-  const addItem     = item    => setWardrobe(w => [...w, { ...item, id: Date.now() }]);
-  const deleteItem  = id      => setWardrobe(w => w.filter(i => i.id !== id));
-  const saveOutfit  = outfit  => setSaved(s   => [...s, { ...outfit, id: Date.now() }]);
-  const deleteOutfit = id     => setSaved(s   => s.filter(o => o.id !== id));
+  const addItem = item => setWardrobe(prev => {
+    const next = [...prev, { ...item, id: Date.now() }];
+    ls.set('wrd_wardrobe', next);
+    return next;
+  });
+  const deleteItem = id => setWardrobe(prev => {
+    const next = prev.filter(i => i.id !== id);
+    ls.set('wrd_wardrobe', next);
+    return next;
+  });
+  const saveOutfit = outfit => setSaved(prev => {
+    const next = [...prev, { ...outfit, id: Date.now() }];
+    ls.set('wrd_saved', next);
+    return next;
+  });
+  const deleteOutfit = id => setSaved(prev => {
+    const next = prev.filter(o => o.id !== id);
+    ls.set('wrd_saved', next);
+    return next;
+  });
 
   const handleOnboardingComplete = () => {
     setOnboarded(true);
