@@ -1,10 +1,10 @@
 import { C, COLOR_HEX } from './tokens';
 
-import topsIcon       from '../icons/tops.png';
-import bottomsIcon    from '../icons/bottoms.png';
-import outerwearIcon  from '../icons/outerwear.png';
-import shoesIcon      from '../icons/shoes.png';
-import accessoriesIcon from '../icons/accessories.png';
+import topsIcon        from './assets/icons/tops.png';
+import bottomsIcon     from './assets/icons/bottoms.png';
+import outerwearIcon   from './assets/icons/outerwear.png';
+import shoesIcon       from './assets/icons/shoes.png';
+import accessoriesIcon from './assets/icons/accessories.png';
 
 export const ShuffleIcon = ({ size = 20, color = C.dark }) => (
   <svg width={size} height={size} viewBox="0 0 17.302 17.302" fill={color}>

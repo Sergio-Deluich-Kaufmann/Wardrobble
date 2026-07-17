@@ -60,7 +60,7 @@ const OnboardingScreen = ({ onComplete }) => (
         background: C.primary, color: C.white, cursor: 'pointer',
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
         fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 18,
-        boxShadow: '0 10px 30px rgba(250,135,135,0.38)',
+        boxShadow: 'none',
         transition: 'transform 0.15s, box-shadow 0.15s',
       }}>
         <PlusIcon size={18} color={C.white} />

@@ -5,7 +5,6 @@ import { TopAppBar, SectionHeader } from '../components';
 
 const pickRandom = arr => arr[Math.floor(Math.random() * arr.length)];
 
-// ── Color theory scoring ─────────────────────────────────────────
 const NEUTRALS        = new Set(['White', 'Black', 'Gray', 'Beige', 'Ivory', 'Silver']);
 const WARM            = new Set(['Red', 'Burgundy', 'Pink', 'Orange', 'Yellow', 'Gold']);
 const COOL            = new Set(['Blue', 'Navy', 'Sky Blue', 'Green', 'Purple']);
