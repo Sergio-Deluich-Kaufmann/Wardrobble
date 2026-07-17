@@ -244,7 +244,7 @@ const SavedScreen = ({ outfits, onDelete, wardrobe = [], onSaveOutfit }) => {
             border: sort !== 'recent' ? '1px solid rgba(220,192,191,0.25)' : 'none',
             color: sort === 'recent' ? C.white : C.secondary,
             ...T.labelSm, whiteSpace: 'nowrap',
-            boxShadow: sort === 'recent' ? '0 2px 10px rgba(250,135,135,0.28)' : 'none',
+            boxShadow: 'none',
             transition: 'all 0.18s',
           }}>RECENT</button>
           <button onClick={() => setSort('alpha')} style={{
@@ -253,7 +253,7 @@ const SavedScreen = ({ outfits, onDelete, wardrobe = [], onSaveOutfit }) => {
             border: sort !== 'alpha' ? '1px solid rgba(220,192,191,0.25)' : 'none',
             color: sort === 'alpha' ? C.white : C.secondary,
             ...T.labelSm, whiteSpace: 'nowrap',
-            boxShadow: sort === 'alpha' ? '0 2px 10px rgba(250,135,135,0.28)' : 'none',
+            boxShadow: 'none',
             transition: 'all 0.18s',
           }}>A–Z</button>
         </div>
@@ -277,7 +277,6 @@ const SavedScreen = ({ outfits, onDelete, wardrobe = [], onSaveOutfit }) => {
 
         {visible.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 0' }}>
-            <div style={{ fontSize: 36, marginBottom: 12 }}>🗂</div>
             <p style={{ ...T.body, color: C.muted }}>
               {outfits.length === 0
                 ? 'No saved outfits yet.\nShuffle and save your first look!'

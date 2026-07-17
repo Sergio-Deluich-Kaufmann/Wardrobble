@@ -5,17 +5,80 @@ import { TopAppBar, SectionHeader } from '../components';
 
 const pickRandom = arr => arr[Math.floor(Math.random() * arr.length)];
 
+// ── Color theory scoring ─────────────────────────────────────────
+const NEUTRALS        = new Set(['White', 'Black', 'Gray', 'Beige', 'Ivory', 'Silver']);
+const WARM            = new Set(['Red', 'Burgundy', 'Pink', 'Orange', 'Yellow', 'Gold']);
+const COOL            = new Set(['Blue', 'Navy', 'Sky Blue', 'Green', 'Purple']);
+const COMPLEMENTARY   = {
+  Blue:      ['Orange', 'Brown', 'Beige'],
+  Navy:      ['Beige', 'White', 'Brown', 'Orange'],
+  'Sky Blue':['Orange', 'Brown'],
+  Green:     ['Red', 'Burgundy', 'Pink'],
+  Purple:    ['Yellow', 'Beige', 'White'],
+  Yellow:    ['Purple', 'Navy'],
+  Red:       ['Green', 'Navy'],
+  Orange:    ['Blue', 'Navy'],
+  Pink:      ['Navy', 'Gray', 'Green'],
+  Burgundy:  ['Green', 'Beige', 'Ivory'],
+  Brown:     ['Blue', 'Sky Blue', 'Navy'],
+};
+const ANALOGOUS = {
+  Blue:      ['Navy', 'Sky Blue', 'Purple'],
+  Navy:      ['Blue', 'Purple'],
+  'Sky Blue':['Blue', 'Green'],
+  Red:       ['Burgundy', 'Orange', 'Pink'],
+  Burgundy:  ['Red', 'Brown', 'Purple'],
+  Green:     ['Sky Blue', 'Yellow'],
+  Purple:    ['Blue', 'Burgundy', 'Pink'],
+  Pink:      ['Purple', 'Red', 'Burgundy'],
+  Brown:     ['Burgundy', 'Beige', 'Orange'],
+  Beige:     ['Brown', 'Ivory', 'White'],
+  Ivory:     ['Beige', 'White'],
+  Yellow:    ['Orange', 'Green'],
+  Orange:    ['Yellow', 'Red', 'Brown'],
+};
+
+const colorScore = (c1, c2) => {
+  if (!c1 || !c2) return 2;
+  if (c1 === c2) return 3;
+  if (NEUTRALS.has(c1) || NEUTRALS.has(c2)) return 3;
+  if (COMPLEMENTARY[c1]?.includes(c2) || COMPLEMENTARY[c2]?.includes(c1)) return 4;
+  if (ANALOGOUS[c1]?.includes(c2) || ANALOGOUS[c2]?.includes(c1)) return 3;
+  if ((WARM.has(c1) && WARM.has(c2)) || (COOL.has(c1) && COOL.has(c2))) return 2;
+  return 1;
+};
+
+const weightedPick = (arr, scoreFn) => {
+  if (!arr.length) return null;
+  const weights = arr.map(item => Math.pow(2, scoreFn(item)));
+  const total = weights.reduce((s, w) => s + w, 0);
+  let r = Math.random() * total;
+  for (let i = 0; i < arr.length; i++) {
+    r -= weights[i];
+    if (r <= 0) return arr[i];
+  }
+  return arr[arr.length - 1];
+};
+
 const generateOutfit = (items, locked, prev) => {
   const tops        = items.filter(i => ['Tops', 'Outerwear'].includes(i.category));
   const bottoms     = items.filter(i => i.category === 'Bottoms');
   const shoes       = items.filter(i => ['Shoes', 'Footwear'].includes(i.category));
   const accessories = items.filter(i => ['Accessory', 'Accessories'].includes(i.category));
-  return {
-    top:       locked?.top       ? prev?.top       : (tops.length        ? pickRandom(tops)        : null),
-    bottom:    locked?.bottom    ? prev?.bottom    : (bottoms.length      ? pickRandom(bottoms)      : null),
-    shoes:     locked?.shoes     ? prev?.shoes     : (shoes.length        ? pickRandom(shoes)        : null),
-    accessory: locked?.accessory ? prev?.accessory : (accessories.length  ? pickRandom(accessories)  : null),
-  };
+
+  const top = locked?.top ? prev?.top
+    : (tops.length ? pickRandom(tops) : null);
+
+  const bottom = locked?.bottom ? prev?.bottom
+    : weightedPick(bottoms, b => colorScore(top?.color, b.color));
+
+  const shoe = locked?.shoes ? prev?.shoes
+    : weightedPick(shoes, s => colorScore(top?.color, s.color) + colorScore(bottom?.color, s.color));
+
+  const accessory = locked?.accessory ? prev?.accessory
+    : (accessories.length ? pickRandom(accessories) : null);
+
+  return { top, bottom, shoes: shoe, accessory };
 };
 
 const SLOT_LABELS = { top: 'Top', bottom: 'Bottoms', shoes: 'Footwear', accessory: 'Accessories' };
@@ -35,7 +98,9 @@ const OutfitSlot = ({ slotKey, item, locked, onToggleLock, animating }) => {
     }}>
       <div style={{ flex: '0 0 130px', position: 'relative', overflow: 'hidden' }}>
         {item ? (
-          <ClothingPlaceholder category={item.category} color={item.color} width={200} height={130} style={{ width: '100%', height: '100%' }} />
+          item.imgSrc
+            ? <img src={item.imgSrc} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            : <ClothingPlaceholder category={item.category} color={item.color} width={200} height={130} style={{ width: '100%', height: '100%' }} />
         ) : (
           <div style={{ width: '100%', height: '100%', background: C.cardBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ ...T.caption, color: C.muted }}>None</span>
@@ -130,7 +195,7 @@ const ShuffleScreen = ({ items, onSaveOutfit, savedCount }) => {
           padding: '11px 22px', borderRadius: 999, border: 'none', cursor: 'pointer',
           background: saved ? '#52C97A' : C.primary,
           color: C.white, ...T.bodySm, fontWeight: 700,
-          boxShadow: saved ? '0 4px 14px rgba(82,201,122,0.35)' : '0 4px 14px rgba(250,135,135,0.3)',
+          boxShadow: 'none',
           transition: 'all 0.28s ease',
         }}>
           <HeartIcon size={15} color={C.white} filled={saved} />
@@ -145,7 +210,7 @@ const ShuffleScreen = ({ items, onSaveOutfit, savedCount }) => {
           width: 56, height: 56, borderRadius: '50%',
           background: C.primary, border: 'none', cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 8px 28px rgba(250,135,135,0.42)',
+          boxShadow: 'none',
           zIndex: 90,
           transform: animating ? 'rotate(180deg) scale(0.92)' : 'rotate(0deg) scale(1)',
           transition: 'transform 0.28s ease',

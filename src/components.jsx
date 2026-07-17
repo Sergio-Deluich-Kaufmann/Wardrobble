@@ -73,7 +73,7 @@ export const Pill = ({ children, active, onClick, small }) => (
     ...( small ? T.caption : T.bodySm ),
     fontWeight: 600,
     whiteSpace: 'nowrap',
-    boxShadow: active ? '0 2px 10px rgba(250,135,135,0.28)' : 'none',
+    boxShadow: 'none',
     transition: 'all 0.18s',
   }}>{children}</button>
 );
@@ -84,7 +84,7 @@ export const FAB = ({ onClick, children, size = 56, style: extraStyle = {} }) =>
     width: size, height: size, borderRadius: '50%',
     background: C.primary, border: 'none', cursor: 'pointer',
     display: 'flex', alignItems: 'center', justifyContent: 'center',
-    boxShadow: '0 8px 28px rgba(250,135,135,0.42)',
+    boxShadow: 'none',
     zIndex: 90, transition: 'transform 0.2s',
     ...extraStyle,
   }}>
@@ -288,7 +288,7 @@ export const AddItemSheet = ({ onClose, onAdd }) => {
                   background: active ? 'rgba(250,135,135,0.1)' : C.white,
                   border: active ? `2px solid ${C.primary}` : `1.5px solid ${C.border}`,
                   transition: 'all 0.16s',
-                  boxShadow: active ? '0 2px 8px rgba(250,135,135,0.2)' : 'none',
+                  boxShadow: 'none',
                 }}>
                   <span style={{ fontSize: 13, lineHeight: 1 }}>{emoji}</span>
                   <span style={{ ...T.caption, fontWeight: 700, color: active ? C.primary : C.secondary }}>{label}</span>
@@ -304,7 +304,7 @@ export const AddItemSheet = ({ onClose, onAdd }) => {
               background: name.trim() ? C.primary : '#DDD',
               color: C.white, ...T.h4, fontSize: 16,
               cursor: name.trim() ? 'pointer' : 'not-allowed',
-              boxShadow: name.trim() ? '0 6px 18px rgba(250,135,135,0.35)' : 'none',
+              boxShadow: 'none',
               transition: 'all 0.2s',
             }}
           >Add to Wardrobe</button>
